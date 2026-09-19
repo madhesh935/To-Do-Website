@@ -1,6 +1,9 @@
 import { memo } from 'react';
 
-type IconName = 'check' | 'plus' | 'list' | 'circle-check' | 'clock' | 'chart' | 'search' | 'edit' | 'trash' | 'sun' | 'moon' | 'calendar' | 'lock' | 'arrow' | 'close' | 'undo' | 'warning' | 'spark';
+export type IconName =
+  | 'check' | 'plus' | 'list' | 'circle-check' | 'clock' | 'chart' | 'search'
+  | 'edit' | 'trash' | 'sun' | 'moon' | 'calendar' | 'lock' | 'arrow' | 'close'
+  | 'undo' | 'warning' | 'spark' | 'flag' | 'keyboard';
 
 const paths: Record<IconName, React.ReactNode> = {
   check: <path d="m5 12 4 4L19 6" />,
@@ -21,8 +24,14 @@ const paths: Record<IconName, React.ReactNode> = {
   undo: <><path d="m8 4-5 5 5 5M3 9h11a6 6 0 0 1 0 12" /></>,
   warning: <><path d="m12 3 10 18H2Z" /><path d="M12 9v5m0 3v.1" /></>,
   spark: <path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />,
+  flag: <path d="M5 21V4m0 0h9l-1.5 4L14 12H5" />,
+  keyboard: <><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10" /></>,
 };
 
 export const Icon = memo(function Icon({ name, className = '' }: { name: IconName; className?: string }) {
-  return <svg className={`icon ${className}`} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
+  return (
+    <svg className={`icon ${className}`} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {paths[name]}
+    </svg>
+  );
 });

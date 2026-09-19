@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
@@ -7,13 +7,19 @@ export default defineConfig({
   build: {
     target: 'es2020',
     cssMinify: true,
+    minify: 'esbuild',
     sourcemap: false,
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) return 'react';
         },
       },
     },
+  },
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
   },
 });

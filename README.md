@@ -1,15 +1,25 @@
 # FocusList
 
-A calm, responsive daily task manager. React + TypeScript + Vite, plain CSS, and no runtime dependencies beyond React. No backend, account, cloud service, remote fonts, or analytics.
+Frontend-only daily task manager. Create, complete, edit, delete, search, and filter tasks by status and priority. Data stays in this browser via Local Storage — no backend, no account, no cloud database.
 
 **Live app:** https://front-theta-roan.vercel.app
 
+## Features
+
+- Add a task by entering a **task title** and choosing **High**, **Medium**, or **Low** priority.
+- Mark tasks completed or active, edit title and priority inline, and delete with undo.
+- Search by title. Filter by **All / Active / Completed** and by priority. The list updates from the live task data.
+- Statistics for **Total Tasks**, **Completed Tasks**, and **Pending Tasks**, plus a completion percentage. These ignore search filters so they always reflect the full list.
+- Tasks persist after refresh. Light and dark themes persist separately.
+- Keyboard: `/` focuses search, `N` focuses the new-task field, `Esc` cancels an edit.
+
 ## Tech stack
 
-- **React 19 + TypeScript** — component UI and static typing throughout.
-- **Vite** — dev server and production bundling, with a separate `react` vendor chunk and `es2020` build target for smaller, cacheable output.
-- **Plain CSS** (`src/styles.css`) — cascade layers (`tokens`, `base`, `components`, `responsive`), CSS custom properties for theming, and breakpoints from 360px up to 1600px+.
-- **Vercel** — static hosting with immutable caching on hashed assets (`vercel.json`).
+- React 19 + TypeScript
+- Vite (React vendor chunk, CSS code splitting, minified production build)
+- Layered CSS with design tokens and mobile-first breakpoints from 320px to 1440px+
+- Vitest for domain logic, ESLint for static checks
+- Vercel static hosting with immutable caching on hashed assets
 
 ## Run locally
 
@@ -23,57 +33,45 @@ npm run dev
 Development: http://127.0.0.1:5173
 
 ```sh
+npm test
+npm run lint
 npm run build
 npm run preview
 ```
 
-Production preview: http://127.0.0.1:4173. The build command performs strict TypeScript checking and creates `dist/`. Serve the contents of `dist/` with any static web server; do not open `index.html` directly using `file://`. Assets use relative paths, so subdirectory hosting is supported. There is no server-side code or environment configuration.
-
-## Features
-
-- Add trimmed task titles with High, Medium, or Low priority; blank titles have accessible inline validation.
-- Native completion checkboxes, inline title/priority editing, deletion, and undo of the latest deletion. Duplicate titles remain independent.
-- Case-insensitive search combined with status and priority filters; clear filters and live result counts.
-- Newest, oldest, and highest-priority sorting with deterministic ID tie-breakers.
-- Global total/completed/pending statistics and rounded completion progress, independent of filters.
-- Persistent light/dark themes, localized date, responsive layouts, keyboard focus indicators, accessible announcements, and reduced-motion support.
-- Enter submits forms; Escape cancels editing. Focus returns to a sensible control after every task action.
-
-## Storage and recovery
-
-Tasks use `focuslist.tasks.v1`; the theme uses `focuslist.theme.v1`. Tasks contain a stable UUID, plain-text title, priority, completion flag, and numeric creation timestamp. New users start empty. Data is validated before use, including duplicate-ID detection.
-
-No initial save runs on page load. Malformed, invalid, or unreadable data is left untouched. A visible warning offers an explicit, two-step replacement action; until then, changes remain in memory. Replacing saved data is irreversible. Write failures retain session tasks, show a warning instead of a successful-save message, and offer **Retry saving**.
-
-Local Storage is specific to this browser profile and exact website origin (including port). Development and preview therefore have separate task lists. Clearing site data or changing devices does not carry tasks over. Undo lasts until the next deletion or page refresh and restores the original ID and metadata. Filters and sorting reset on refresh. Simultaneous-tab synchronization is not implemented: the last tab to save wins. Storage-blocked session changes cannot survive closing or refreshing the page.
+Production preview: http://127.0.0.1:4173. Serve `dist/` with any static web server. Do not open `index.html` with `file://`.
 
 ## Architecture
 
-The app follows a small, conventional separation of concerns rather than one flat file:
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for layers, data flow, and responsive strategy.
 
 ```
 src/
-├── App.tsx                 # composition root: owns state, derives data, wires callbacks to sections
-├── components/             # one focused, presentational component per page section
-│   ├── SiteHeader.tsx       # brand, date, theme toggle
-│   ├── TaskStatistics.tsx   # total/completed/pending/progress cards
-│   ├── StorageWarning.tsx   # blocked/failed-save recovery banner
-│   ├── AddTaskForm.tsx      # new-task form
-│   ├── TaskListPanel.tsx    # search, filters, sort, task list, empty state, undo
-│   ├── SiteFooter.tsx
-│   ├── NotificationToast.tsx
-│   ├── TaskItem.tsx         # a single task row + its inline editor (memoized)
-│   ├── PrioritySelect.tsx
-│   └── Icon.tsx             # memoized SVG icon set
-├── hooks/
-│   └── useTaskStore.ts      # the one custom hook that owns task state + guarded localStorage persistence
-├── utils/
-│   └── tasks.ts             # pure functions: types, validation, filtering, sorting, statistics
-└── styles.css                # design tokens, theming, and responsive layout (cascade layers)
+├── App.tsx                 # root: providers already wrap this from main.tsx
+├── pages/                  # HomePage owns filters, callbacks, and section wiring
+├── components/
+│   ├── common/             # Icon, ErrorBoundary, toast, shared controls
+│   ├── layout/             # header, footer, page shell
+│   ├── stats/              # Total / Completed / Pending statistics
+│   ├── composer/           # add-task form
+│   ├── tasks/              # filters, list, row editor, empty state
+│   └── storage/            # Local Storage recovery banner
+├── context/                # TaskProvider + ThemeProvider (React Context)
+├── hooks/                  # useTaskStore (useReducer), debounce, media query, theme
+├── services/               # Local Storage read/write
+├── types/                  # Task, Filters, Priority
+├── constants/              # storage keys, breakpoints, defaults
+├── utils/                  # pure filter / sort / statistics / validation
+└── styles/                 # tokens, base, layout, components, responsive
 ```
 
-- **State** lives in one place (`useTaskStore`); `App.tsx` composes it with local UI state (form fields, filters, notifications) and passes plain callbacks down to each section component — none of the section components read or write persistence directly.
-- **Logic is pure**: everything in `utils/tasks.ts` (validation, filtering, sorting, statistics) is a pure function with no React or DOM dependency.
-- **No god component**: the page used to be one ~180-line component rendering the entire tree; it's now split into one component per visual section (header, stats, add-form, task list, footer, toast), each independently readable and testable, with `App.tsx` left responsible only for state and wiring.
-- **Components are presentational and memoized**: `TaskItem` and `Icon` are wrapped in `React.memo`, and every handler passed down from `App.tsx` is wrapped in `useCallback`, so unrelated state changes (typing in the search box, a toast timing out) don't re-render every row in the task list.
-- **No global state library**: the task list is small and single-page, so a Context/Redux/Zustand layer would add indirection without a real benefit here — the custom-hook boundary already isolates persistence concerns from the UI.
+## Storage
+
+- Tasks: `focuslist.tasks.v1`
+- Theme: `focuslist.theme.v1`
+
+Malformed data is left untouched. A banner offers an explicit replace action. Write failures keep session tasks and offer retry. Local Storage is per browser profile and origin. Filters reset on refresh.
+
+## Accessibility
+
+Skip link, labeled controls, visible `:focus-visible` rings, `aria-live` toasts, `aria-pressed` filters, 44px touch targets, reduced-motion support, and forced-colors fallbacks. Decorative icons are hidden from assistive tech.
