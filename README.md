@@ -9,7 +9,6 @@ A calm, responsive daily task manager. React + TypeScript + Vite, plain CSS, and
 - **React 19 + TypeScript** — component UI and static typing throughout.
 - **Vite** — dev server and production bundling, with a separate `react` vendor chunk and `es2020` build target for smaller, cacheable output.
 - **Plain CSS** (`src/styles.css`) — cascade layers (`tokens`, `base`, `components`, `responsive`), CSS custom properties for theming, and breakpoints from 360px up to 1600px+.
-- **Playwright** — browser acceptance tests, accessibility (axe) checks, and pure-logic unit tests.
 - **Vercel** — static hosting with immutable caching on hashed assets (`vercel.json`).
 
 ## Run locally
@@ -48,26 +47,6 @@ No initial save runs on page load. Malformed, invalid, or unreadable data is lef
 
 Local Storage is specific to this browser profile and exact website origin (including port). Development and preview therefore have separate task lists. Clearing site data or changing devices does not carry tasks over. Undo lasts until the next deletion or page refresh and restores the original ID and metadata. Filters and sorting reset on refresh. Simultaneous-tab synchronization is not implemented: the last tab to save wins. Storage-blocked session changes cannot survive closing or refreshing the page.
 
-## Tests
-
-```sh
-npx playwright install chromium
-npm test
-```
-
-Playwright starts a local development server automatically. Tests use isolated browser contexts, never your personal browser data. Chromium interaction tests cover creation, validation, duplicates, editing/canceling, completion, filtering, deletion/undo, sorting, refresh persistence, empty states, HTML-like titles, storage failures/recovery, keyboard focus, and themes. Pure tests cover statistics, validation, filtering, and deterministic sorting. Axe checks light/dark empty, populated, and editor states. Responsive tests capture screenshots at 320, 375, 768, and 1440 px, check overflow and touch controls, plus landscape and reduced-motion behavior.
-
-To test the production build in PowerShell:
-
-```powershell
-npm run build
-$env:FOCUSLIST_PREVIEW = '1'
-npm test
-Remove-Item Env:FOCUSLIST_PREVIEW
-```
-
-On macOS/Linux: `FOCUSLIST_PREVIEW=1 npm test` after building. View the report with `npx playwright show-report`; screenshots are in `test-results/`. Automated accessibility checks complement, but do not replace, manual assistive-technology testing.
-
 ## Architecture
 
 The app follows a small, conventional separation of concerns rather than one flat file:
@@ -94,9 +73,7 @@ src/
 ```
 
 - **State** lives in one place (`useTaskStore`); `App.tsx` composes it with local UI state (form fields, filters, notifications) and passes plain callbacks down to each section component — none of the section components read or write persistence directly.
-- **Logic is pure and testable**: everything in `utils/tasks.ts` (validation, filtering, sorting, statistics) is a pure function with no React or DOM dependency, covered directly by `tests/tasks.spec.ts`.
+- **Logic is pure**: everything in `utils/tasks.ts` (validation, filtering, sorting, statistics) is a pure function with no React or DOM dependency.
 - **No god component**: the page used to be one ~180-line component rendering the entire tree; it's now split into one component per visual section (header, stats, add-form, task list, footer, toast), each independently readable and testable, with `App.tsx` left responsible only for state and wiring.
 - **Components are presentational and memoized**: `TaskItem` and `Icon` are wrapped in `React.memo`, and every handler passed down from `App.tsx` is wrapped in `useCallback`, so unrelated state changes (typing in the search box, a toast timing out) don't re-render every row in the task list.
 - **No global state library**: the task list is small and single-page, so a Context/Redux/Zustand layer would add indirection without a real benefit here — the custom-hook boundary already isolates persistence concerns from the UI.
-
-- `tests/` — browser acceptance and pure-logic tests.
