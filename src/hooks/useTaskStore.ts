@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { loadTasks, saveTasks, type Task } from '../utils/tasks';
 
 export function useTaskStore() {
@@ -7,20 +7,20 @@ export function useTaskStore() {
   const [blocked, setBlocked] = useState(initial.blocked);
   const [saveFailed, setSaveFailed] = useState(false);
 
-  function commit(next: Task[]) {
+  const commit = useCallback((next: Task[]) => {
     setTasks(next);
     if (blocked) return false;
     const saved = saveTasks(next);
     setSaveFailed(!saved);
     return saved;
-  }
+  }, [blocked]);
 
-  function retrySave() {
+  const retrySave = useCallback(() => {
     const saved = saveTasks(tasks);
     setSaveFailed(!saved);
     if (saved) setBlocked(false);
     return saved;
-  }
+  }, [tasks]);
 
   return { tasks, blocked, saveFailed, commit, retrySave };
 }
