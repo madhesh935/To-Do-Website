@@ -18,7 +18,8 @@
 
   @media (min-width: 576px) {
     .stats-rail { gap: 1rem; }
-    .toolbar { grid-template-columns: minmax(0, 1fr) 11rem; }
+    .toolbar { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .search-field { grid-column: 1 / -1; }
     .add-button { grid-column: auto; }
     .add-form { grid-template-columns: minmax(0, 1fr) 8.5rem 8.5rem; }
   }
@@ -30,6 +31,8 @@
 
   @media (min-width: 768px) {
     .stats-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .toolbar { grid-template-columns: minmax(0, 1fr) 10.5rem 10.5rem; }
+    .search-field { grid-column: auto; }
     .task-item { grid-template-columns: var(--touch) minmax(0, 1fr) 6.5rem var(--touch) var(--touch); }
     .priority-badge { justify-self: center; }
     .task-actions { grid-column: auto; }
@@ -43,6 +46,12 @@
   }
 
   @media (min-width: 1024px) {
+    .toolbar { grid-template-columns: minmax(0, 1fr) 12rem 12rem; }
+    .page-shell { padding-inline: 2rem; }
+  }
+
+  @media (min-width: 1200px) {
+    :root { --page-max: 76rem; }
     .workspace {
       grid-template-columns: 16.5rem minmax(0, 1fr);
       gap: 1.5rem;
@@ -51,13 +60,8 @@
       grid-template-columns: 1fr;
       position: sticky;
       top: 5.25rem;
+      width: 17.5rem;
     }
-    .toolbar { grid-template-columns: minmax(0, 1fr) 12rem; }
-  }
-
-  @media (min-width: 1200px) {
-    :root { --page-max: 76rem; }
-    .stats-rail { width: 17.5rem; }
   }
 
   @media (min-width: 1280px) {
@@ -107,12 +111,23 @@
     .footer-detail { display: block; }
   }
 
+  @media (max-width: 768px) {
+    html { overflow-x: hidden; }
+    img, video, canvas, svg { max-width: 100%; height: auto; }
+    .workspace { grid-template-columns: minmax(0, 1fr); }
+  }
+
   @media (max-width: 991px) {
     .workspace { grid-template-columns: minmax(0, 1fr); }
   }
 
   @media (max-width: 1023px) {
     .stats-rail { position: static; }
+  }
+
+  @media (max-width: 1024px) {
+    .stats-rail { position: static; }
+    .workspace { grid-template-columns: minmax(0, 1fr); }
   }
 
   @media (max-width: 1199px) {

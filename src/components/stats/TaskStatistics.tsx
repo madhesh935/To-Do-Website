@@ -1,13 +1,18 @@
-import { Icon } from '../common/Icon';
+import { useRef } from 'react';
+import { useIntersectionObserver } from '../../hooks';
 import type { TaskStatistics as Stats } from '../../types';
+import { Icon } from '../common/Icon';
 
 interface Props {
   statistics: Stats;
 }
 
 export function TaskStatistics({ statistics }: Props) {
+  const railRef = useRef<HTMLElement>(null);
+  const isVisible = useIntersectionObserver(railRef);
+
   return (
-    <aside className="stats-rail" aria-label="Task statistics">
+    <aside ref={railRef} className={`stats-rail${isVisible ? ' is-visible' : ''}`} aria-label="Task statistics">
       <article className="stat-card">
         <div className="stat-top">
           <span>Total Tasks</span>

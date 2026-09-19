@@ -43,7 +43,7 @@ Production preview: http://127.0.0.1:4173. Serve `dist/` with any static web ser
 
 ## Architecture
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for layers, data flow, and responsive strategy.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/CHANGELOG.md](docs/CHANGELOG.md).
 
 ```
 src/

@@ -3,8 +3,8 @@
 @layer tokens {
   :root {
     color-scheme: light;
-    --font-sans: "Plus Jakarta Sans", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-    --font-display: Fraunces, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+    --font-sans: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+    --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
     --background: #f3f6f5;
     --surface: #ffffff;
     --surface-subtle: #eef3f1;

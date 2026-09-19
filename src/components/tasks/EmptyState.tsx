@@ -10,14 +10,22 @@ interface Props {
 export function EmptyState({ hasTasks, onClearFilters, titleRef }: Props) {
   return (
     <div className="empty-state">
-      <span className="empty-icon">
-        <Icon name={hasTasks ? 'search' : 'list'} />
-      </span>
-      <h3>{hasTasks ? 'No tasks match your search or filters.' : 'No tasks yet. Add your first task.'}</h3>
+      <img
+        className="empty-illustration"
+        src="./empty.svg"
+        srcSet="./empty.svg 1x, ./empty.svg 2x"
+        sizes="64px"
+        width="64"
+        height="64"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <h3>{hasTasks ? 'No tasks match your search or filters.' : 'A fresh start. Add your first task.'}</h3>
       <p>
         {hasTasks
-          ? 'Try a different title, status, or priority.'
-          : 'Enter a task title above, choose a priority, and press Add Task.'}
+          ? 'Try a different search, or make a little more room.'
+          : 'Enter a task title, choose High, Medium, or Low priority, then add the task.'}
       </p>
       {hasTasks ? (
         <button type="button" className="button secondary" onClick={onClearFilters}>
@@ -25,7 +33,7 @@ export function EmptyState({ hasTasks, onClearFilters, titleRef }: Props) {
         </button>
       ) : (
         <button type="button" className="text-button" onClick={() => titleRef.current?.focus()}>
-          Focus the task title field<Icon name="arrow" />
+          Let’s make a start<Icon name="arrow" />
         </button>
       )}
     </div>

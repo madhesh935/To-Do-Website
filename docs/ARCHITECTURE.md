@@ -9,6 +9,7 @@ Presentation   src/pages, src/components, src/components/layout
 State          src/context (React Context + Provider), src/hooks
 Domain         src/utils (pure filtering, statistics, validation)
 Data           src/services/storage.ts (Local Storage read/write)
+State store    src/store/taskReducer.ts (pure useReducer)
 Contracts      src/types, src/constants
 ```
 

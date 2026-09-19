@@ -28,7 +28,7 @@ export function AddTaskForm({
           <input
             ref={titleRef}
             id="task-title"
-            placeholder="Enter a task title"
+            placeholder="What do you need to do?"
             value={title}
             onChange={(event) => onTitleChange(event.target.value)}
             aria-invalid={titleError}

@@ -16,15 +16,14 @@
   }
   .intro-subtitle { color: var(--muted); margin-top: 0.5rem; font-size: 1rem; max-width: 42rem; }
   .stat-card {
-    padding: 1rem 1.1rem;
+    padding: 1.15rem 1.2rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    content-visibility: auto;
-    contain-intrinsic-size: 120px;
+    border-top: 3px solid var(--primary);
   }
   .stat-top {
     display: flex;
@@ -49,6 +48,8 @@
   }
   .stat-caption { color: var(--muted); font-size: 0.75rem; margin-top: 0.35rem; }
   .progress-card { background: var(--surface-subtle); }
+  .stats-rail > .stat-card:nth-child(2) { border-top-color: var(--green); }
+  .stats-rail > .stat-card:nth-child(3) { border-top-color: var(--amber); }
   .progress-card strong { color: var(--tint-text); }
   .percent-sign { font-size: 1.1rem; margin-left: 0.1rem; }
   progress {
@@ -245,7 +246,7 @@
   }
   .text-button:hover { background: var(--tint); }
   .results-count { margin-left: auto; color: var(--muted); font-size: 0.8rem; }
-  .task-list { list-style: none; margin: 0; padding: 0; }
+  .task-list { list-style: none; margin: 0; padding: 0.75rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.65rem; }
   .task-item {
     display: grid;
     grid-template-columns: var(--touch) minmax(0, 1fr) auto auto;
@@ -253,11 +254,11 @@
     gap: 0.45rem 0.55rem;
     min-height: 4.75rem;
     padding: 0.7rem 1.1rem 0.7rem 0.85rem;
-    border-top: 1px solid var(--border);
+    border: 1px solid var(--border);
     border-left: 4px solid var(--blue);
-    transition: background 160ms ease;
-    content-visibility: auto;
-    contain-intrinsic-size: 76px;
+    border-radius: 0.9rem;
+    background: var(--surface);
+    transition: background 160ms ease, border-color 160ms ease;
   }
   .task-item[data-priority="high"] { border-left-color: var(--red); }
   .task-item[data-priority="medium"] { border-left-color: var(--amber); }
@@ -330,6 +331,12 @@
     align-items: center;
     padding: 2.25rem 1.25rem 1.75rem;
     text-align: center;
+  }
+  .empty-illustration {
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1rem;
+    object-fit: contain;
   }
   .empty-icon {
     width: 3.5rem;

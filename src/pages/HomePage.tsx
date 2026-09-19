@@ -1,4 +1,4 @@
-import { startTransition, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { AddTaskForm } from '../components/composer/AddTaskForm';
 import { NotificationToast } from '../components/common/NotificationToast';
 import { AppLayout } from '../components/layout/AppLayout';
@@ -75,7 +75,7 @@ export default function HomePage() {
   const toggleTask = useCallback((id: string) => {
     const task = tasks.find((item) => item.id === id)!;
     const saved = commit(tasks.map((item) => item.id === id ? { ...item, completed: !item.completed } : item));
-    announce(saved ? (task.completed ? 'Task marked active.' : 'Task completed.') : 'Task updated for this session only. Changes could not be saved.', saved);
+    announce(saved ? (task.completed ? 'Task marked active.' : 'Task completed. Nicely done!') : 'Task updated for this session only. Changes could not be saved.', saved);
     if (filters.status !== 'All') {
       const index = visibleTasks.findIndex((item) => item.id === id);
       focusTask((visibleTasks[index + 1] ?? visibleTasks[index - 1])?.id, true);
@@ -108,7 +108,7 @@ export default function HomePage() {
   }, [tasks, deletedTask, commit, announce, focusTask]);
 
   const clearFilters = useCallback(() => {
-    startTransition(() => setFilters(DEFAULT_FILTERS));
+    setFilters(DEFAULT_FILTERS);
     searchRef.current?.focus();
   }, []);
 

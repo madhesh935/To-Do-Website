@@ -15,6 +15,7 @@
     font-size: 1rem;
     line-height: 1.5;
     overflow-x: hidden;
+    touch-action: manipulation;
   }
   img, video, canvas, svg {
     max-width: 100%;
@@ -25,6 +26,7 @@
   button, input, select, a {
     -webkit-tap-highlight-color: transparent;
     scroll-margin-block: 1.5rem 7rem;
+    touch-action: manipulation;
   }
   input, select {
     min-width: 0;

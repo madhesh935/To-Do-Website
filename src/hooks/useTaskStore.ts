@@ -1,28 +1,8 @@
 import { useCallback, useMemo, useReducer } from 'react';
 import { loadTasks, saveTasks } from '../services';
-import type { Task } from '../types';
+import { taskReducer } from '../store';
 import { getStatistics } from '../utils';
-
-interface StoreState {
-  tasks: Task[];
-  blocked: boolean;
-  saveFailed: boolean;
-}
-
-type StoreAction =
-  | { type: 'commit'; tasks: Task[]; saved: boolean }
-  | { type: 'retry'; saved: boolean };
-
-function reducer(state: StoreState, action: StoreAction): StoreState {
-  switch (action.type) {
-    case 'commit':
-      return { ...state, tasks: action.tasks, saveFailed: !action.saved && !state.blocked };
-    case 'retry':
-      return { ...state, saveFailed: !action.saved, blocked: action.saved ? false : state.blocked };
-    default:
-      return state;
-  }
-}
+import type { Task } from '../types';
 
 function persist(tasks: Task[], blocked: boolean): boolean {
   if (blocked) return false;
@@ -32,7 +12,7 @@ function persist(tasks: Task[], blocked: boolean): boolean {
 /** Owns the task collection and guarded Local Storage writes. */
 export function useTaskStore() {
   const initial = useMemo(() => loadTasks(), []);
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useReducer(taskReducer, {
     tasks: initial.tasks,
     blocked: initial.blocked,
     saveFailed: false,

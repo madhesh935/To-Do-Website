@@ -1,7 +1,8 @@
-import { type RefObject, startTransition } from 'react';
+import { type RefObject } from 'react';
 import { STATUS_FILTERS } from '../../constants';
-import { PRIORITIES, type Filters, type PriorityFilter, type SortOrder, type StatusFilter } from '../../types';
+import type { Filters, PriorityFilter, SortOrder, StatusFilter } from '../../types';
 import { Icon } from '../common/Icon';
+import { PrioritySelect } from '../common/PrioritySelect';
 
 interface Props {
   filters: Filters;
@@ -31,13 +32,20 @@ export function TaskFilters({
               ref={searchRef}
               id="task-search"
               type="search"
-              placeholder="Search tasks by title"
+              placeholder="Search tasks by title…"
               value={filters.search}
               onChange={(event) => onFiltersChange({ ...filters, search: event.target.value })}
               autoComplete="off"
             />
           </div>
         </div>
+        <PrioritySelect
+          id="filter-priority"
+          label="Filter by priority"
+          value={filters.priority}
+          onChange={(value) => onFiltersChange({ ...filters, priority: value as PriorityFilter })}
+          allowAll
+        />
         <div className="field sort-field">
           <label htmlFor="task-sort">Sort by</label>
           <select id="task-sort" value={sort} onChange={(event) => onSortChange(event.target.value as SortOrder)}>
@@ -49,19 +57,19 @@ export function TaskFilters({
       </div>
 
       <div className="filter-row">
-        <nav className="status-filters" aria-label="Filter by status">
+        <div className="status-filters" role="group" aria-label="Filter by status">
           {STATUS_FILTERS.map((status) => (
             <button
               key={status}
               type="button"
               aria-pressed={filters.status === status}
-              onClick={() => startTransition(() => onFiltersChange({ ...filters, status }))}
+              onClick={() => onFiltersChange({ ...filters, status })}
             >
               {status}
               <span>{counts[status]}</span>
             </button>
           ))}
-        </nav>
+        </div>
         {hasFilters && (
           <button type="button" className="text-button clear-button" onClick={onClearFilters}>
             <Icon name="close" />Clear filters
@@ -69,21 +77,6 @@ export function TaskFilters({
         )}
         <p className="results-count" role="status">Showing {visibleCount} of {tasksCount} tasks</p>
       </div>
-
-      <fieldset className="priority-filters">
-        <legend>Filter by priority</legend>
-        {(['All', ...PRIORITIES] as const).map((priority) => (
-          <button
-            key={priority}
-            type="button"
-            className={`chip chip-${priority.toLowerCase()}`}
-            aria-pressed={filters.priority === priority}
-            onClick={() => startTransition(() => onFiltersChange({ ...filters, priority: priority as PriorityFilter }))}
-          >
-            {priority === 'All' ? 'All priorities' : priority}
-          </button>
-        ))}
-      </fieldset>
     </div>
   );
 }

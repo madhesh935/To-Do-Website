@@ -1,4 +1,3 @@
 .priorityRail {
-  content-visibility: auto;
-  contain: layout paint;
+  contain: layout;
 }
