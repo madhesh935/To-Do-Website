@@ -1,0 +1,12 @@
+{
+  "name": "FocusList — Daily Task Manager",
+  "short_name": "FocusList",
+  "description": "A calm, responsive daily task manager. Organize, prioritize, and complete your tasks in the browser.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f7f6fc",
+  "theme_color": "#f7f6fc",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

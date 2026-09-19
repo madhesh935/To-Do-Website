@@ -74,28 +74,29 @@ The app follows a small, conventional separation of concerns rather than one fla
 
 ```
 src/
-├── App.tsx              # top-level orchestration: wires state, handlers, and layout together
-├── components/          # presentational, memoized UI pieces (no persistence logic)
-│   ├── Icon.tsx
+├── App.tsx                 # composition root: owns state, derives data, wires callbacks to sections
+├── components/             # one focused, presentational component per page section
+│   ├── SiteHeader.tsx       # brand, date, theme toggle
+│   ├── TaskStatistics.tsx   # total/completed/pending/progress cards
+│   ├── StorageWarning.tsx   # blocked/failed-save recovery banner
+│   ├── AddTaskForm.tsx      # new-task form
+│   ├── TaskListPanel.tsx    # search, filters, sort, task list, empty state, undo
+│   ├── SiteFooter.tsx
+│   ├── NotificationToast.tsx
+│   ├── TaskItem.tsx         # a single task row + its inline editor (memoized)
 │   ├── PrioritySelect.tsx
-│   └── TaskItem.tsx
+│   └── Icon.tsx             # memoized SVG icon set
 ├── hooks/
-│   └── useTaskStore.ts  # the one custom hook that owns task state + guarded localStorage persistence
+│   └── useTaskStore.ts      # the one custom hook that owns task state + guarded localStorage persistence
 ├── utils/
-│   └── tasks.ts         # pure functions: types, validation, filtering, sorting, statistics
-└── styles.css            # design tokens, theming, and responsive layout (cascade layers)
+│   └── tasks.ts             # pure functions: types, validation, filtering, sorting, statistics
+└── styles.css                # design tokens, theming, and responsive layout (cascade layers)
 ```
 
-- **State** lives in one place (`useTaskStore`); `App.tsx` composes it with local UI state (form fields, filters, notifications) and passes plain callbacks down.
+- **State** lives in one place (`useTaskStore`); `App.tsx` composes it with local UI state (form fields, filters, notifications) and passes plain callbacks down to each section component — none of the section components read or write persistence directly.
 - **Logic is pure and testable**: everything in `utils/tasks.ts` (validation, filtering, sorting, statistics) is a pure function with no React or DOM dependency, covered directly by `tests/tasks.spec.ts`.
-- **Components are presentational and memoized**: `TaskItem` and `Icon` are wrapped in `React.memo`, and the handlers passed into `TaskItem` from `App.tsx` are wrapped in `useCallback`, so unrelated state changes (typing in the search box, a toast timing out) don't re-render every row in the task list.
+- **No god component**: the page used to be one ~180-line component rendering the entire tree; it's now split into one component per visual section (header, stats, add-form, task list, footer, toast), each independently readable and testable, with `App.tsx` left responsible only for state and wiring.
+- **Components are presentational and memoized**: `TaskItem` and `Icon` are wrapped in `React.memo`, and every handler passed down from `App.tsx` is wrapped in `useCallback`, so unrelated state changes (typing in the search box, a toast timing out) don't re-render every row in the task list.
 - **No global state library**: the task list is small and single-page, so a Context/Redux/Zustand layer would add indirection without a real benefit here — the custom-hook boundary already isolates persistence concerns from the UI.
 
-## Source map
-
-- `src/App.tsx` — task orchestration and dashboard.
-- `src/utils/tasks.ts` — types, validation, persistence helpers, filters, sorting, and statistics.
-- `src/hooks/useTaskStore.ts` — authoritative task state and guarded persistence.
-- `src/components/` — reusable SVG icons, priority select, task row, and inline editor.
-- `src/styles.css` — semantic design tokens, theme, responsive layout, and focus/motion styles.
 - `tests/` — browser acceptance and pure-logic tests.
