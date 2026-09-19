@@ -1,6 +1,16 @@
 # FocusList
 
-A calm, responsive daily task manager. React + TypeScript + Vite, plain CSS, and no runtime dependencies beyond React. No backend, account, cloud service, remote fonts, or analytics. Nothing has been deployed.
+A calm, responsive daily task manager. React + TypeScript + Vite, plain CSS, and no runtime dependencies beyond React. No backend, account, cloud service, remote fonts, or analytics.
+
+**Live app:** https://front-theta-roan.vercel.app
+
+## Tech stack
+
+- **React 19 + TypeScript** — component UI and static typing throughout.
+- **Vite** — dev server and production bundling, with a separate `react` vendor chunk and `es2020` build target for smaller, cacheable output.
+- **Plain CSS** (`src/styles.css`) — cascade layers (`tokens`, `base`, `components`, `responsive`), CSS custom properties for theming, and breakpoints from 360px up to 1600px+.
+- **Playwright** — browser acceptance tests, accessibility (axe) checks, and pure-logic unit tests.
+- **Vercel** — static hosting with immutable caching on hashed assets (`vercel.json`).
 
 ## Run locally
 
@@ -18,7 +28,7 @@ npm run build
 npm run preview
 ```
 
-Production preview: http://127.0.0.1:4173. The build command performs strict TypeScript checking and creates `dist/`. Serve the contents of `dist/` with any static web server; do not open `index.html` directly using `file://`. Assets use relative paths, so subdirectory hosting is supported. There is no server-side code or environment configuration. Deployment is intentionally left to you.
+Production preview: http://127.0.0.1:4173. The build command performs strict TypeScript checking and creates `dist/`. Serve the contents of `dist/` with any static web server; do not open `index.html` directly using `file://`. Assets use relative paths, so subdirectory hosting is supported. There is no server-side code or environment configuration.
 
 ## Features
 
@@ -58,11 +68,34 @@ Remove-Item Env:FOCUSLIST_PREVIEW
 
 On macOS/Linux: `FOCUSLIST_PREVIEW=1 npm test` after building. View the report with `npx playwright show-report`; screenshots are in `test-results/`. Automated accessibility checks complement, but do not replace, manual assistive-technology testing.
 
+## Architecture
+
+The app follows a small, conventional separation of concerns rather than one flat file:
+
+```
+src/
+├── App.tsx              # top-level orchestration: wires state, handlers, and layout together
+├── components/          # presentational, memoized UI pieces (no persistence logic)
+│   ├── Icon.tsx
+│   ├── PrioritySelect.tsx
+│   └── TaskItem.tsx
+├── hooks/
+│   └── useTaskStore.ts  # the one custom hook that owns task state + guarded localStorage persistence
+├── utils/
+│   └── tasks.ts         # pure functions: types, validation, filtering, sorting, statistics
+└── styles.css            # design tokens, theming, and responsive layout (cascade layers)
+```
+
+- **State** lives in one place (`useTaskStore`); `App.tsx` composes it with local UI state (form fields, filters, notifications) and passes plain callbacks down.
+- **Logic is pure and testable**: everything in `utils/tasks.ts` (validation, filtering, sorting, statistics) is a pure function with no React or DOM dependency, covered directly by `tests/tasks.spec.ts`.
+- **Components are presentational and memoized**: `TaskItem` and `Icon` are wrapped in `React.memo`, and the handlers passed into `TaskItem` from `App.tsx` are wrapped in `useCallback`, so unrelated state changes (typing in the search box, a toast timing out) don't re-render every row in the task list.
+- **No global state library**: the task list is small and single-page, so a Context/Redux/Zustand layer would add indirection without a real benefit here — the custom-hook boundary already isolates persistence concerns from the UI.
+
 ## Source map
 
 - `src/App.tsx` — task orchestration and dashboard.
-- `src/tasks.ts` — types, validation, persistence helpers, filters, sorting, and statistics.
-- `src/useTaskStore.ts` — authoritative task state and guarded persistence.
+- `src/utils/tasks.ts` — types, validation, persistence helpers, filters, sorting, and statistics.
+- `src/hooks/useTaskStore.ts` — authoritative task state and guarded persistence.
 - `src/components/` — reusable SVG icons, priority select, task row, and inline editor.
 - `src/styles.css` — semantic design tokens, theme, responsive layout, and focus/motion styles.
 - `tests/` — browser acceptance and pure-logic tests.

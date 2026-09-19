@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { TASKS_KEY, THEME_KEY, type Priority, type Task } from '../src/tasks';
+import { TASKS_KEY, THEME_KEY, type Priority, type Task } from '../src/utils/tasks';
 
 const rows = (page: Page) => page.locator('.task-item');
 const rowByTitle = (page: Page, title: string) => rows(page).filter({ has: page.locator('.task-title', { hasText: title }) });

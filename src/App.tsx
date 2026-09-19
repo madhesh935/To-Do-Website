@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Icon } from './components/Icon';
 import { PrioritySelect } from './components/PrioritySelect';
 import { TaskItem } from './components/TaskItem';
-import { getStatistics, getVisibleTasks, THEME_KEY, type Filters, type Priority, type SortOrder, type Status, type Task } from './tasks';
-import { useTaskStore } from './useTaskStore';
+import { useTaskStore } from './hooks/useTaskStore';
+import { getStatistics, getVisibleTasks, THEME_KEY, type Filters, type Priority, type SortOrder, type Status, type Task } from './utils/tasks';
 
 const defaultFilters: Filters = { search: '', status: 'All', priority: 'All' };
 
@@ -66,7 +66,7 @@ export default function App() {
     announce(saved ? 'Task added.' : 'Task added for this session only. Changes could not be saved.', saved);
   }
 
-  function toggleTask(id: string) {
+  const toggleTask = useCallback((id: string) => {
     const task = tasks.find((item) => item.id === id)!;
     const saved = commit(tasks.map((item) => item.id === id ? { ...item, completed: !item.completed } : item));
     announce(saved ? (task.completed ? 'Task marked active.' : 'Task completed. Nicely done!') : 'Task updated for this session only. Changes could not be saved.', saved);
@@ -74,16 +74,16 @@ export default function App() {
       const index = visibleTasks.findIndex((item) => item.id === id);
       focusTask((visibleTasks[index + 1] ?? visibleTasks[index - 1])?.id, true);
     }
-  }
+  }, [tasks, filters.status, visibleTasks]);
 
-  function saveEdit(id: string, nextTitle: string, nextPriority: Priority) {
+  const saveEdit = useCallback((id: string, nextTitle: string, nextPriority: Priority) => {
     const saved = commit(tasks.map((task) => task.id === id ? { ...task, title: nextTitle, priority: nextPriority } : task));
     setEditingId(null);
     announce(saved ? 'Changes saved.' : 'Changes applied for this session only. Changes could not be saved.', saved);
     focusTask(id);
-  }
+  }, [tasks]);
 
-  function deleteTask(id: string) {
+  const deleteTask = useCallback((id: string) => {
     const task = tasks.find((item) => item.id === id)!;
     const index = visibleTasks.findIndex((item) => item.id === id);
     const saved = commit(tasks.filter((item) => item.id !== id));
@@ -91,7 +91,7 @@ export default function App() {
     if (editingId === id) setEditingId(null);
     announce(saved ? 'Task deleted.' : 'Task deleted for this session only. Changes could not be saved.', saved);
     focusTask((visibleTasks[index + 1] ?? visibleTasks[index - 1])?.id);
-  }
+  }, [tasks, visibleTasks, editingId]);
 
   function undoDelete() {
     if (!deletedTask || tasks.some((task) => task.id === deletedTask.id)) return;

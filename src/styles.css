@@ -218,6 +218,10 @@
 }
 
 @layer responsive {
+  @media (min-width: 1441px) {
+    .header-inner, .page-shell { max-width: 1600px; }
+    .statistics { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+  }
   @media (max-width: 900px) {
     .header-inner { padding: 20px 24px; }
     .page-shell { padding: 24px 24px 96px; }

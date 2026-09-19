@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
-import type { Priority, Task } from '../tasks';
+import { memo, useEffect, useRef, useState, type FormEvent } from 'react';
+import type { Priority, Task } from '../utils/tasks';
 import { Icon } from './Icon';
 import { PrioritySelect } from './PrioritySelect';
 
@@ -45,7 +45,7 @@ function TaskEditor({ task, onCancel, onSave }: { task: Task; onCancel: () => vo
   </form>;
 }
 
-export function TaskItem({ task, editing, onEdit, onSave, onToggle, onDelete }: Props) {
+export const TaskItem = memo(function TaskItem({ task, editing, onEdit, onSave, onToggle, onDelete }: Props) {
   const editRef = useRef<HTMLButtonElement>(null);
 
   function cancel() {
@@ -61,4 +61,4 @@ export function TaskItem({ task, editing, onEdit, onSave, onToggle, onDelete }: 
       <div className="task-actions"><button ref={editRef} type="button" className="icon-button" onClick={() => onEdit(task.id)} aria-label={`Edit ${task.title}`} title="Edit task"><Icon name="edit" /></button><button type="button" className="icon-button delete-button" onClick={() => onDelete(task.id)} aria-label={`Delete ${task.title}`} title="Delete task"><Icon name="trash" /></button></div>
     </>}
   </li>;
-}
+});

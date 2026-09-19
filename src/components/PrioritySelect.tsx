@@ -1,4 +1,4 @@
-import { priorities, type Priority } from '../tasks';
+import { priorities, type Priority } from '../utils/tasks';
 
 interface Props {
   id: string;

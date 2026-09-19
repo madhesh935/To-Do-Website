@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 type IconName = 'check' | 'plus' | 'list' | 'circle-check' | 'clock' | 'chart' | 'search' | 'edit' | 'trash' | 'sun' | 'moon' | 'calendar' | 'lock' | 'arrow' | 'close' | 'undo' | 'warning' | 'spark';
 
 const paths: Record<IconName, React.ReactNode> = {
@@ -21,6 +23,6 @@ const paths: Record<IconName, React.ReactNode> = {
   spark: <path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" />,
 };
 
-export function Icon({ name, className = '' }: { name: IconName; className?: string }) {
+export const Icon = memo(function Icon({ name, className = '' }: { name: IconName; className?: string }) {
   return <svg className={`icon ${className}`} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
-}
+});

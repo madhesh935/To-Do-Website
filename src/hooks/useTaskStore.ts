@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { loadTasks, saveTasks, type Task } from './tasks';
+import { loadTasks, saveTasks, type Task } from '../utils/tasks';
 
 export function useTaskStore() {
   const [initial] = useState(loadTasks);

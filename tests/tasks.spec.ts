@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { getStatistics, getVisibleTasks, isTask, type Task } from '../src/tasks';
+import { getStatistics, getVisibleTasks, isTask, type Task } from '../src/utils/tasks';
 
 const tasks: Task[] = [
   { id: 'beta', title: 'Review brief', priority: 'Low', completed: false, createdAt: 2 },
